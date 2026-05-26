@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Kanjirakkatt Family — Classic Lineage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="../index.html">&larr; samples</a>
+    <h1>Classic Lineage</h1>
+    <div class="hint">Click any card to reveal children. Click again to fold them away.</div>
+  </header>
+
+  <main class="stage">
+    <div class="canvas" id="canvas"></div>
+  </main>
+
+  <aside class="detail" id="detail" hidden>
+    <button class="close" id="detailClose" aria-label="Close">&times;</button>
+    <h2 id="detailName"></h2>
+    <p id="detailInfo"></p>
+  </aside>
+
+  <script src="../data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

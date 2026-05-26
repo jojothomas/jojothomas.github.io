@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Kanjirakkatt Family — Radial Bloom</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="../index.html">&larr; samples</a>
+    <h1>Radial Bloom</h1>
+    <div class="hint">Click a relative to bloom their descendants outward. Drag the background to pan.</div>
+    <button class="reset" id="reset">Reset</button>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="viewport" id="viewport">
+      <svg class="links" id="links" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="world" id="world"></div>
+    </div>
+  </main>
+
+  <aside class="detail" id="detail" hidden>
+    <button class="close" id="detailClose" aria-label="Close">&times;</button>
+    <h2 id="detailName"></h2>
+    <p id="detailInfo"></p>
+  </aside>
+
+  <script src="../data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

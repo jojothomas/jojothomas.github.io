@@ -1,0 +1,274 @@
+:root {
+  --bg-1: #f6efe3;
+  --bg-2: #ede1c8;
+  --ink: #2b2419;
+  --ink-soft: #5b5142;
+  --rule: #c8b89a;
+  --male: #4a6b7a;
+  --male-ink: #fff;
+  --female: #b56576;
+  --female-ink: #fff;
+  --root: #6b4e7d;
+  --root-ink: #fff;
+  --card-shadow: 0 6px 14px rgba(60, 40, 10, 0.18);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Georgia", "Cambria", "Times New Roman", serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 10%, #fbf4e3 0%, transparent 55%),
+    radial-gradient(circle at 80% 90%, #f0e5cc 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+  min-height: 100vh;
+}
+
+.topbar {
+  padding: 22px 32px 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  border-bottom: 1px solid var(--rule);
+  background: linear-gradient(180deg, rgba(255, 250, 235, 0.6), transparent);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(4px);
+}
+.topbar h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.topbar .hint {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.topbar .back {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  transition: background 200ms;
+}
+.topbar .back:hover { background: rgba(255, 255, 255, 0.5); }
+
+.stage {
+  padding: 50px 24px 120px;
+  overflow-x: auto;
+}
+.canvas {
+  display: inline-block;
+  min-width: 100%;
+}
+
+/* --- Tree layout --------------------------------------------------------- */
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 0;
+}
+
+.pair {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.card {
+  background: #fffaf0;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 12px 18px;
+  min-width: 150px;
+  max-width: 220px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  transition:
+    transform 260ms var(--ease),
+    box-shadow 260ms var(--ease),
+    border-color 260ms var(--ease);
+  white-space: pre-line;
+  user-select: none;
+  position: relative;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(60, 40, 10, 0.22);
+}
+.card .badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 10px;
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+.card.male   { border-top: 4px solid var(--male); }
+.card.female { border-top: 4px solid var(--female); }
+.card.root   {
+  border-top: 4px solid var(--root);
+  background: linear-gradient(180deg, #fff, #f4ecdd);
+  font-weight: 600;
+}
+.card.has-children::after {
+  content: "+";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 20px;
+  font-family: sans-serif;
+  transition: transform 280ms var(--ease), background 260ms;
+}
+.card.has-children.open::after { content: "−"; transform: translateX(-50%) rotate(180deg); }
+
+.spouse-link {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+.spouse-link::before {
+  content: "♥";
+  color: #b56576;
+  font-size: 16px;
+}
+
+/* --- Connectors ---------------------------------------------------------- */
+
+.children {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 28px;
+  padding-top: 38px;
+  position: relative;
+  overflow: hidden;
+  transition: max-height 700ms var(--ease);
+  max-height: 0;
+}
+.children.open { max-height: 9999px; }
+
+/* Vertical stem from parent down to the horizontal bar */
+.children::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 18px;
+  background: var(--rule);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 360ms var(--ease) 60ms;
+}
+.children.open::before { transform: scaleY(1); }
+
+/* Horizontal bar across the children */
+.children::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--rule);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 520ms var(--ease) 220ms;
+}
+.children.open::after { transform: scaleX(1); }
+.children.single-child::after { display: none; }
+
+/* Vertical drop from horizontal bar to each child */
+.node.child > .pair {
+  position: relative;
+}
+.node.child::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: var(--rule);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 360ms var(--ease);
+}
+.node.child.revealed::before {
+  transform: scaleY(1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* --- Child reveal animation --------------------------------------------- */
+
+.node.child {
+  opacity: 0;
+  transform: translateY(-18px) scale(0.92);
+  transition:
+    opacity 520ms var(--ease),
+    transform 620ms var(--ease);
+}
+.node.child.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* --- Detail panel ------------------------------------------------------- */
+
+.detail {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  max-width: 360px;
+  background: #fffaf0;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 18px 22px;
+  box-shadow: 0 16px 36px rgba(60, 40, 10, 0.25);
+  z-index: 20;
+  animation: slideIn 380ms var(--ease);
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.detail h2 { margin: 0 0 8px; font-size: 17px; white-space: pre-line; }
+.detail p  { margin: 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; white-space: pre-line; }
+.detail .close {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: none;
+  border: 0;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
