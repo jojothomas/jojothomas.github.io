@@ -236,9 +236,9 @@ window.familyData = {
                       ]
                     },
                     {
-                      "name": "Thomas\n(Chachan)\n(1934)",
+                      "name": "Thomas\n(Thomachan)\n(1934)",
                       "col": "maleCol",
-                      "info": "Thomas Thomas (Born: Dec-12-1934) Living at Kanjirakkatt, Ranni\nWife: Aleykutty Kottadikunnel\n(Born: Aug-18-1935)",
+                      "info": "Thomas Thomas, Ranni, Kerala \nBorn: Dec-12-1934 \nDied: May-16-2013) \nWife: Aleykutty Kottadikunnel\nBorn: Aug-18-1935\nDied: Jun-07-2017",
                       "spouse": {
                         "name": "Aleykutty",
                         "col": "femaleCol"
@@ -281,21 +281,21 @@ window.familyData = {
                             {
                               "name": "Christine",
                               "col": "maleCol",
-                              "info": "Christine Thomas",
+                              "info": "Christine Thomas, Northern Ireland, UK",
                               "spouse": null,
                               "children": []
                             },
                             {
                               "name": "Justine",
                               "col": "maleCol",
-                              "info": "Justine Thomas",
+                              "info": "Justine Thomas, Bangalore, India",
                               "spouse": null,
                               "children": []
                             },
                             {
                               "name": "Nestine",
                               "col": "maleCol",
-                              "info": "Nestine Thomas",
+                              "info": "Nestine Thomas, Ranni, Kerala, India",
                               "spouse": null,
                               "children": []
                             }
@@ -425,7 +425,7 @@ window.familyData = {
                         {
                           "name": "Jojo\n(1969)",
                           "col": "maleCol",
-                          "info": "Jojo Thomas",
+                          "info": "Jojo Thomas, Dallas, USA",
                           "spouse": {
                             "name": "Shanty",
                             "col": "maleCol"
@@ -434,21 +434,21 @@ window.familyData = {
                             {
                               "name": "Joshua",
                               "col": "maleCol",
-                              "info": "Joshua Thomas",
+                              "info": "Joshua Thomas, Dallas, USA",
                               "spouse": null,
                               "children": []
                             },
                             {
                               "name": "Jacinta",
                               "col": "femaleCol",
-                              "info": "Jacinta Thomas",
+                              "info": "Jacinta Thomas, Dallas, USA",
                               "spouse": null,
                               "children": []
                             },
                             {
                               "name": "Jaslyn",
                               "col": "femaleCol",
-                              "info": "Jaslyn Thomas",
+                              "info": "Jaslyn Thomas, Dallas, USA",
                               "spouse": null,
                               "children": []
                             }
@@ -457,9 +457,9 @@ window.familyData = {
                         {
                           "name": "Tessy\n(1971)",
                           "col": "femaleCol",
-                          "info": "Tessy Sajosh",
+                          "info": "Tessy Sajosh, ",
                           "spouse": {
-                            "name": "Sajosh",
+                            "name": "Sajosh, Pooveliknunnel, Erumely (Parunthumpara)",
                             "col": "maleCol"
                           },
                           "children": [
