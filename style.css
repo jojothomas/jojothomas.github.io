@@ -1,0 +1,416 @@
+:root {
+  --ink: #1f2540;
+  --ink-soft: #4d5478;
+  --string: rgba(35, 50, 90, 0.45);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+body {
+  font-family: "Georgia", "Cambria", serif;
+  color: var(--ink);
+}
+
+/* --- Sky background ---------------------------------------------------- */
+
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse at 30% 20%, #fff7e8 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 75%, #e7f0ff 0%, transparent 55%),
+    linear-gradient(180deg, #cfe6f7 0%, #f5ebd7 100%);
+}
+.clouds {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 30%, rgba(255, 255, 255, 0.85) 0px, rgba(255, 255, 255, 0) 90px),
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.75) 0px, rgba(255, 255, 255, 0) 70px),
+    radial-gradient(circle at 70% 15%, rgba(255, 255, 255, 0.8) 0px, rgba(255, 255, 255, 0) 110px),
+    radial-gradient(circle at 88% 30%, rgba(255, 255, 255, 0.7) 0px, rgba(255, 255, 255, 0) 80px),
+    radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.6) 0px, rgba(255, 255, 255, 0) 100px);
+  animation: drift 60s linear infinite;
+}
+@keyframes drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-40px); }
+}
+
+/* --- Topbar ------------------------------------------------------------ */
+
+.topbar {
+  padding: 18px 28px 14px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0.7), transparent);
+  backdrop-filter: blur(6px);
+}
+.topbar h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #2c3055;
+}
+.topbar .hint {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-left: 8px;
+}
+.topbar .back, .topbar .reset {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 5px 12px;
+  border: 1px solid rgba(35, 50, 90, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 240ms;
+}
+.topbar .reset { margin-left: auto; }
+.topbar .back:hover, .topbar .reset:hover { background: rgba(255, 255, 255, 0.85); }
+
+/* --- Stage ------------------------------------------------------------- */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+}
+.stage.dragging { cursor: grabbing; }
+
+.viewport {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transition: transform 720ms var(--ease-soft);
+  will-change: transform;
+}
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.strings {
+  position: absolute;
+  left: -4000px;
+  top: -4000px;
+  width: 8000px;
+  height: 8000px;
+  pointer-events: none;
+  overflow: visible;
+}
+.string {
+  fill: none;
+  stroke: var(--string);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  transition: stroke-dashoffset 900ms var(--ease-soft);
+}
+.string.drawn { stroke-dashoffset: 0; }
+
+/* --- Bubble nodes ------------------------------------------------------ */
+
+.node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition:
+    left 760ms var(--ease-soft),
+    top 760ms var(--ease-soft),
+    opacity 600ms var(--ease-soft);
+  will-change: transform, left, top, opacity;
+}
+.node.visible { opacity: 1; }
+
+.float {
+  /* Per-node randomized bobbing layer driven by --bob-x/--bob-y/--bob-dur. */
+  animation: bob var(--bob-dur, 5s) ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes bob {
+  from { transform: translate(var(--bob-x, -4px), var(--bob-y, -3px)); }
+  to   { transform: translate(calc(var(--bob-x, -4px) * -1), calc(var(--bob-y, -3px) * -1)); }
+}
+
+.pop {
+  /* Click-pop layer: bubble grows from 0. Decoupled from .float bobbing. */
+  transform: scale(0);
+  transition: transform 720ms var(--ease-pop);
+}
+.node.visible .pop { transform: scale(1); }
+
+.bubble {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.3;
+  padding: 10px;
+  cursor: pointer;
+  white-space: pre-line;
+  user-select: none;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 -18px 28px rgba(0, 0, 0, 0.12),
+    inset 0 14px 26px rgba(255, 255, 255, 0.6),
+    0 14px 28px rgba(45, 60, 110, 0.22);
+  transition:
+    box-shadow 300ms var(--ease-soft),
+    filter 300ms var(--ease-soft);
+}
+.bubble::before {
+  /* Glassy highlight. */
+  content: "";
+  position: absolute;
+  left: 16%;
+  top: 12%;
+  width: 36%;
+  height: 28%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+.bubble:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    inset 0 -18px 28px rgba(0, 0, 0, 0.12),
+    inset 0 14px 26px rgba(255, 255, 255, 0.65),
+    0 18px 36px rgba(45, 60, 110, 0.32);
+}
+
+.bubble.male {
+  background: radial-gradient(circle at 32% 28%, #d9eeff, #6a9ecf 75%, #3b6792 100%);
+  color: #0d2236;
+}
+.bubble.female {
+  background: radial-gradient(circle at 32% 28%, #ffe1ec, #e6889e 75%, #a8455f 100%);
+  color: #2c0d18;
+}
+.bubble.root {
+  width: 144px;
+  height: 144px;
+  font-size: 13.5px;
+  font-weight: 600;
+  background: radial-gradient(circle at 32% 28%, #fff4cf, #e3b15a 75%, #9a6c1c 100%);
+  color: #2a1700;
+  box-shadow:
+    inset 0 -22px 32px rgba(0, 0, 0, 0.14),
+    inset 0 16px 30px rgba(255, 255, 255, 0.7),
+    0 20px 44px rgba(154, 108, 28, 0.32);
+}
+
+.bubble.open {
+  box-shadow:
+    inset 0 -18px 28px rgba(0, 0, 0, 0.12),
+    inset 0 14px 26px rgba(255, 255, 255, 0.7),
+    0 0 0 5px rgba(255, 255, 255, 0.55),
+    0 18px 38px rgba(45, 60, 110, 0.32);
+}
+
+/* Selected (currently hovered / detailed) bubble — glowing golden ring. */
+.bubble.selected {
+  box-shadow:
+    inset 0 -18px 28px rgba(0, 0, 0, 0.12),
+    inset 0 14px 26px rgba(255, 255, 255, 0.65),
+    0 0 0 4px rgba(255, 245, 200, 0.85),
+    0 0 22px 6px rgba(243, 197, 102, 0.65),
+    0 18px 38px rgba(45, 60, 110, 0.32);
+  animation: selected-pulse 2.4s ease-in-out infinite;
+}
+.bubble.selected.open {
+  /* Combine the open + selected look. */
+  box-shadow:
+    inset 0 -18px 28px rgba(0, 0, 0, 0.12),
+    inset 0 14px 26px rgba(255, 255, 255, 0.7),
+    0 0 0 5px rgba(255, 245, 200, 0.85),
+    0 0 26px 8px rgba(243, 197, 102, 0.7),
+    0 18px 40px rgba(45, 60, 110, 0.35);
+}
+@keyframes selected-pulse {
+  0%, 100% { filter: brightness(1.0); }
+  50%      { filter: brightness(1.08); }
+}
+
+.bubble .count {
+  /* Anchored at bubble center; transform translates to the chosen corner.
+     Using transform (instead of right/top) lets us animate between corners. */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  margin-top: -12px;
+  border-radius: 50%;
+  background: #fffaf0;
+  color: #1f2540;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(35, 50, 90, 0.18);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  z-index: 3;
+  pointer-events: none;
+  /* Default: top-right. */
+  transform: translate(46px, -46px);
+  transition: transform 540ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bubble.badge-tr .count { transform: translate( 46px, -46px); }
+.bubble.badge-tl .count { transform: translate(-46px, -46px); }
+.bubble.badge-bl .count { transform: translate(-46px,  46px); }
+.bubble.badge-br .count { transform: translate( 46px,  46px); }
+
+.bubble.root .count {
+  /* The root bubble is larger — bigger badge, larger corner offset. */
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  margin-top: -14px;
+  font-size: 12px;
+  transform: translate(60px, -60px);
+}
+.bubble.root.badge-tr .count { transform: translate( 60px, -60px); }
+.bubble.root.badge-tl .count { transform: translate(-60px, -60px); }
+.bubble.root.badge-bl .count { transform: translate(-60px,  60px); }
+.bubble.root.badge-br .count { transform: translate( 60px,  60px); }
+
+.spouse {
+  /* Anchored at the bubble center; transform translates it out to whichever
+     side has more clearance from neighbors. */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  margin-top: -24px;
+  border-radius: 50%;
+  font-size: 10px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  white-space: pre-line;
+  box-shadow:
+    inset 0 -8px 14px rgba(0, 0, 0, 0.12),
+    inset 0 8px 14px rgba(255, 255, 255, 0.6),
+    0 6px 14px rgba(0, 0, 0, 0.22);
+  /* Default side: right of a 108px bubble (radius 54 + 4px overhang). */
+  transform: translateX(58px);
+  transition: transform 540ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bubble.spouse-left .spouse  { transform: translateX(-58px); }
+.bubble.spouse-right .spouse { transform: translateX( 58px); }
+
+/* Root bubble is larger (144px → radius 72), spouse offset grows accordingly. */
+.bubble.root .spouse                { transform: translateX( 76px); }
+.bubble.root.spouse-left  .spouse   { transform: translateX(-76px); }
+.bubble.root.spouse-right .spouse   { transform: translateX( 76px); }
+
+.spouse.male   { background: radial-gradient(circle at 30% 30%, #d9eeff, #6a9ecf 75%); color: #0d2236; }
+.spouse.female { background: radial-gradient(circle at 30% 30%, #ffe1ec, #e6889e 75%); color: #2c0d18; }
+
+.spouse::before {
+  /* Heart sits on the inner side of the spouse (toward the main bubble). */
+  content: "♥";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  color: #d34f6c;
+  font-size: 14px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+  /* Default (spouse on the right): heart at spouse's left edge. */
+  transform: translate(-32px, -50%);
+  transition: transform 540ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bubble.spouse-left .spouse::before  { transform: translate( 26px, -50%); }
+.bubble.spouse-right .spouse::before { transform: translate(-32px, -50%); }
+
+/* --- Detail panel ----------------------------------------------------- */
+
+.detail {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  max-width: 360px;
+  background: rgba(255, 252, 244, 0.96);
+  border: 1px solid rgba(35, 50, 90, 0.25);
+  border-radius: 14px;
+  padding: 18px 22px;
+  z-index: 20;
+  color: var(--ink);
+  box-shadow: 0 16px 36px rgba(45, 60, 110, 0.25);
+  animation: slideIn 420ms var(--ease-soft);
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.detail h2 { margin: 0 0 10px; font-size: 17px; white-space: pre-line; color: #2c3055; }
+.detail p  { margin: 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; white-space: pre-line; }
+
+.detail-meta {
+  margin: 0 0 12px;
+  padding: 8px 0 10px;
+  border-top: 1px dashed rgba(35, 50, 90, 0.2);
+  border-bottom: 1px dashed rgba(35, 50, 90, 0.2);
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  font-size: 12.5px;
+}
+.detail-meta:empty {
+  display: none;
+}
+.detail-meta dt {
+  color: #8a7752;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 10.5px;
+  align-self: center;
+}
+.detail-meta dd {
+  margin: 0;
+  color: var(--ink);
+  white-space: pre-line;
+}
+.detail .close {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: none;
+  border: 0;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
