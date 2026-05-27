@@ -238,7 +238,7 @@ window.familyData = {
                     {
                       "name": "Thomas\n(Thomachan)\n(1934)",
                       "col": "maleCol",
-                      "info": "Thomas Thomas, Ranni, Kerala \nBorn: Dec-12-1934 \nDied: May-16-2013) \nWife: Aleykutty Kottadikunnel\nBorn: Aug-18-1935\nDied: Jun-07-2017",
+                      "info": "Thomas Thomas, Ranni, Kerala \nBorn: Dec-12-1934 \nDied: May-16-2013 \nWife: Aleykutty Kottadikunnel\nBorn: Aug-18-1935\nDied: Jun-07-2017",
                       "spouse": {
                         "name": "Aleykutty",
                         "col": "femaleCol"
@@ -368,7 +368,7 @@ window.familyData = {
                         {
                           "name": "Jacob\n(1965)",
                           "col": "maleCol",
-                          "info": "Reji Thomas",
+                          "info": "Jacob (Reji), Kanjirakkattu, Ranni",
                           "spouse": {
                             "name": "Laly",
                             "col": "titansCol"
@@ -434,22 +434,22 @@ window.familyData = {
                             {
                               "name": "Joshua",
                               "col": "maleCol",
-                              "info": "Joshua Thomas, Dallas, USA",
+                              "info": "Joshua Thomas, USA",
                               "spouse": null,
                               "children": []
                             },
                             {
                               "name": "Jacinta",
                               "col": "femaleCol",
-                              "info": "Jacinta Thomas, Dallas, USA",
+                              "info": "Jacinta Thomas, USA",
                               "spouse": null,
                               "children": []
                             },
                             {
                               "name": "Jaslyn",
                               "col": "femaleCol",
-                              "info": "Jaslyn Thomas, Dallas, USA",
-                              "spouse": null,
+                              "info": "Jaslyn Thomas, USA",
+                              "spouse": null, 
                               "children": []
                             }
                           ]
@@ -457,9 +457,9 @@ window.familyData = {
                         {
                           "name": "Tessy\n(1971)",
                           "col": "femaleCol",
-                          "info": "Tessy Sajosh, ",
+                          "info": "Tessy; Married to Sajosh Poovelikunnel, Erumely",
                           "spouse": {
-                            "name": "Sajosh, Pooveliknunnel, Erumely (Parunthumpara)",
+                            "name": "Sajosh",
                             "col": "maleCol"
                           },
                           "children": [
